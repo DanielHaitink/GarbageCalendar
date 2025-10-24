@@ -145,6 +145,11 @@
   }
 }
 
+.fa-solid {
+    width: 40px;
+    height: 40px;
+  }
+
 /* Custom utilities */
 @layer utilities {
   /* Text gradients */

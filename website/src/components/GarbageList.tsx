@@ -1,26 +1,132 @@
-import type {GarbageData} from "../types.ts";
+import type {GarbageData, GarbageType} from "../types.ts";
 import * as React from "react";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {
+    faTrashAlt,
+    faTree,
+    faLeaf,
+    faNewspaper,
+    faSheetPlastic,
+    faGlasses,
+    faBattery,
+    faQuestionCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 interface GarbageListProps {
     data: GarbageData;
 }
 
-export const GarbageList: React.FC<GarbageListProps> = ({ data }) => {
+const Months = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
+
+const GarbageTypeIcon = (type: GarbageType) => {
+    switch (type) {
+        case "kca":
+            return <FontAwesomeIcon icon={faBattery}/>;
+        case "kerstbomen":
+            return <FontAwesomeIcon icon={faTree}/>
+        case "ander":
+            return <FontAwesomeIcon icon={faTrashAlt}/>;
+        case "restafval":
+            return <FontAwesomeIcon icon={faTrashAlt}/>;
+        case "gft":
+            return <FontAwesomeIcon icon={faLeaf}/>;
+        case "papier":
+            return <FontAwesomeIcon icon={faNewspaper}/>;
+        case "plastic":
+            return <FontAwesomeIcon icon={faSheetPlastic}/>;
+        case "glas":
+            return <FontAwesomeIcon icon={faGlasses}/>;
+        default:
+            return <FontAwesomeIcon icon={faTrashAlt}/>;
+    }
+}
+
+const GarbageDate = (date: Date) => {
+    return date.getDay().toFixed(0) + " " + Months[date.getMonth()] + " " + date.getFullYear();
+}
+
+const GarbageTypeColor = (type: GarbageType) => {
+    switch (type) {
+        case "kca":
+            return "to-yellow-50";
+        case "kerstbomen":
+            return "to-green-200";
+        case "ander":
+            return "to-red-200";
+        case "restafval":
+            return "to-gray-200";
+        case "gft":
+            return "to-green-50";
+        case "papier":
+            return "to-gray-200";
+        case "plastic":
+            return "to-green-500";
+        case "glas":
+            return "to-purple-500";
+        default:
+            return "to-blue-500";
+    }
+}
+
+const GarbageTypeLabel = (type: GarbageType) => {
+    switch (type) {
+        case "gft":
+            return "GFT";
+        case "papier":
+            return "Papier";
+        case "plastic":
+            return "Plastic";
+        case "glas":
+            return "Glas";
+        case "kca":
+            return "KCA";
+        case "kerstbomen":
+            return "Kerstbomen";
+        case "ander":
+            return "Ander";
+        case "restafval":
+            return "Restafval";
+    }
+}
+
+export const GarbageList: React.FC<GarbageListProps> = ({data}) => {
     console.log(data);
     const sortedPickups = data.pickups.sort((a, b) => a.date.getTime() - b.date.getTime());
 
     return (
-            <div className="garbage-list">
-                <h2>Afvalkalender</h2>
-                <ul>
-                    {sortedPickups.map((pickup) => (
-                        <li key={pickup.id}>
-                            <div className="date">{pickup.dateString}</div>
-                            <div className="type">{pickup.type}</div>
-                            <div className="description">{pickup.description}</div>
-                        </li>
-                    ))}
-                </ul>
+        <div className="garbage-list animate-fade-in-up text-center">
+            <h2 className="text-xl text-red-500 font-bold mb-16">Afvalkalender</h2>
+            <div className={"flex flex-wrap justify-center gap-4"}>
+                {sortedPickups.map((pickup) => (
+                    <div
+                        className={`rounded-xl drop-shadow-2xl p-8 bg-gradient-to-br from-gray-50 ${GarbageTypeColor(pickup.type)}`}
+                        key={pickup.id}>
+                        <div className="card-container flex flex-row gap-8 justify-between items-center">
+                            <div className="icon">{GarbageTypeIcon(pickup.type)}</div>
+                            <div>
+                                <div className="date">{GarbageDate(pickup.date)}</div>
+                                <div className="type">{GarbageTypeLabel(pickup.type)}</div>
+                                <div className="description">{pickup.description}</div>
+                            </div>
+
+                            <div className="more-info absolute top-0 right-0 cursor-pointer group min-w-full">
+                                <FontAwesomeIcon icon={faQuestionCircle}
+                                                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"/>
+                                <div
+                                    className="placement-info invisible group-hover:visible absolute text-xs bg-white
+                                    top-10 text-center rounded-md shadow-md p-5 z-10 min-w-full">
+                                    {pickup.placement}
+                                </div>
+                            </div>
+
+                            <div className="placement-info invisible group-[a]-hover:visible absolute text-xs top-12 left-2 right-2 text-center bg-white p-2 rounded-md shadow-md border z-10">
+                                {pickup.placement}
+                            </div>
+
+                        </div>
+                    </div>
+                ))}
             </div>
+        </div>
     );
 }

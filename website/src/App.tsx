@@ -26,8 +26,8 @@ function App() {
     }
 
     return (
-        <div className="App min-h-screen bg-gradient-to-br from-red-50 via-blue-50 to-green-50 ">
-            <div className="flex flex-col h-screen">
+        <div className="App min-h-screen bg-fixed bg-gradient-to-br from-red-50 via-blue-50 to-green-50">
+            <div className="flex flex-col">
                 <header className="text-center mb-16 pt-16 animate-fade-in-up">
                     <h1 className="font-bold text-shadow-amber-100 text-xl mb-6 text-red-500">Afvalkalender
                         Groningen</h1>
@@ -59,7 +59,7 @@ function App() {
                     )}
                 </main>
 
-                <footer className="text-center text-sm mt-16 mb-8 animate-fade-in-up">
+                <footer className="text-center text-sm mt-32 pb-8 animate-fade-in-up">
                     Gemaakt door <a href="https://lionsdensoftware.nl">Lions Den Software</a> | <a
                     href="https://danielhaitink.nl" target="_blank" rel="noreferrer">Daniël Haitink</a>
                     <br/>
