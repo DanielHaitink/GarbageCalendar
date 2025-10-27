@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import {GarbageCache} from "./garbageCache.js";
 
 export class GarbageProvider {
     static PROVIDER_GRONINGEN = 'Groningen';
@@ -13,7 +14,13 @@ export class GarbageProvider {
     providerUrl = null;
     authToken = null;
     authValidUntil = null;
+    IDCache = new GarbageCache(1000 * 60 * 60 * 24 * 31);
+    cache = new GarbageCache();
 
+    /**
+     *
+     * @param providerName {string} The name of the provider, available in PROVIDERS.
+     */
     constructor(providerName) {
         const provider = GarbageProvider.PROVIDERS[providerName];
 
@@ -23,21 +30,31 @@ export class GarbageProvider {
         this.providerUrl = `${GarbageProvider.BASE_URL}/organisations/${provider}/address`;
     }
 
+    /**
+     * Check if the provider has a valid authentication.
+     * @returns {boolean} True if it is currently authenticated, false otherwise.
+     */
     isAuthenticated() {
         return this.authToken !== null && this.authValidUntil > new Date();
     }
 
+    /**
+     * Authenticate with the server. If it already has a authentication stored, it will not authenticate again.
+     * @returns {Promise<>}
+     */
     async #authenticate() {
         if (this.isAuthenticated())
-            return true;
+             return true;
 
         const result = await fetch(
             `${GarbageProvider.AUTH_URL}?key=${GarbageProvider.API_KEY}`,
             {method: 'POST'}
         );
 
-        if (!result.ok)
-            throw new Error(`Failed to authenticate: ${result.statusText}`);
+        if (!result.ok) {
+            console.error(`Failed to authenticate: ${result.statusCode} ${result.statusText}`);
+            return false;
+        }
 
         const jsonResult = await result.json();
 
@@ -48,11 +65,44 @@ export class GarbageProvider {
         return true;
     }
 
+    /**
+     *
+     * @param postalCode {string}
+     * @param houseNumber {string}
+     * @param suffix {string}
+     * @returns {string}
+     */
+    #getAddressKey(postalCode, houseNumber, suffix = '') {
+        return `${postalCode.trim().toUpperCase()}${houseNumber.trim()}${suffix?.trim().toUpperCase() || ''}`;
+    }
+
+    /**
+     * Obtain the address ID of the server for the given address.
+     * The function will throw an error if no address ID can be obtained.
+     * @param postalCode {string} The postal code
+     * @param houseNumber {string} The number as string
+     * @param suffix {string} The suffix, if applicable.
+     * @returns {Promise<string>} The address ID.
+     */
     async getAddressId(postalCode, houseNumber, suffix = '') {
+        const addressKey = this.#getAddressKey(postalCode, houseNumber, suffix);
+
+        if (this.IDCache.has(addressKey))
+            return this.IDCache.get(addressKey);
+
         if (!await this.#authenticate())
             throw new Error('Failed to authenticate');
 
-        const url = `${this.providerUrl}?zipcode=${postalCode}&housenumber=${houseNumber}`;
+        const params = new URLSearchParams(
+            {
+                zipcode: postalCode.toUpperCase(),
+                housenumber: houseNumber,
+                suffix: suffix?.toUpperCase() || ''
+            }
+        );
+
+        const url = `${this.providerUrl}?${params.toString()}`;
+
         console.log(url);
         const response = await fetch(
             url,
@@ -68,15 +118,29 @@ export class GarbageProvider {
             throw new Error('No addresses found');
 
         for (const address of addresses) {
-            if (address.addition.toLowerCase() === suffix.toLowerCase())
-                return address.addressId.toLowerCase();
+            if (address.addition.toLowerCase() === suffix.toLowerCase()) {
+                const id = address.addressId.toLowerCase();
+
+                this.IDCache.add(addressKey, id)
+
+                return id;
+            }
         }
 
         throw new Error('No matching address found');
     }
 
+    /**
+     * Obtain the waste data from the given address ID.
+     * This function will throw an error if no waste data can be obtained.
+     * @param addressId {string} The address ID.
+     * @returns {Promise<{}[]>} The waste data as an array of dictionaries.
+     */
     async getWasteData(addressId) {
         try {
+            if (this.cache.has(addressId))
+                return this.cache.get(addressId);
+
             if (!await this.#authenticate())
                 throw new Error('Failed to authenticate');
 
@@ -93,7 +157,7 @@ export class GarbageProvider {
 
             const data = await result.json();
 
-            // https://europe-west3-burgerportaal-production.cloudfunctions.net/exposed/organisations/452048812597326549/address/238127830304985004/calendar
+            this.cache.add(addressId, data);
 
             return data;
         } catch (e) {

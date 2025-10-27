@@ -16,6 +16,7 @@ function App() {
         console.log(address);
         setCurrentAddress(address);
         setGarbageData(undefined);
+        setError(undefined);
 
         try {
             setGarbageData(await garbageApi.getGarbageData(address));
@@ -35,17 +36,18 @@ function App() {
                 </header>
 
                 <main className="flex-grow animate-fade-in-up">
-                    <AddressForm onSubmit={handleAddressSubmit}
+                    {!currentAddress && < AddressForm onSubmit={handleAddressSubmit}
                                  initialAddress={currentAddress}/>
+                    }
 
-                    {currentAddress && (
-                        <div className="current-address">
-                            <h2>Geselecteerd adres:</h2>
-                            <p>
-                                {currentAddress.postcode} {currentAddress.number} {currentAddress.suffix}
-                            </p>
-                        </div>
-                    )}
+                    {/*{currentAddress && (*/}
+                    {/*    <div className="current-address">*/}
+                    {/*        <h2>Geselecteerd adres:</h2>*/}
+                    {/*        <p>*/}
+                    {/*            {currentAddress.postcode} {currentAddress.number} {currentAddress.suffix}*/}
+                    {/*        </p>*/}
+                    {/*    </div>*/}
+                    {/*)}*/}
 
                     {garbageData && (
                         <GarbageList data={garbageData}/>

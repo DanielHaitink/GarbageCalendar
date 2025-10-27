@@ -2,6 +2,11 @@ import {GarbageProvider} from "./garbageProvider.js";
 
 const garbageProvider = new GarbageProvider(GarbageProvider.PROVIDER_GRONINGEN);
 
+/**
+ * Get the address information from the request.
+ * @param request {XMLHttpRequest}
+ * @returns {{postcode: string, number: string, suffix: string}}
+ */
 function getAddressInformation(request) {
     const {postcode, number, suffix = ''} = request.query;
 
@@ -13,12 +18,16 @@ function getAddressInformation(request) {
         throw new Error('Invalid postcode or number');
 
     return {
-            postcode,
-            number,
-            suffix
+            postcode: postcode.trim().toUpperCase(),
+            number: number.trim(),
+            suffix: suffix.trim().toUpperCase() || ''
         }
 }
 
+/**
+ * Set CORS headers to the result
+ * @param result {} The result
+ */
 function setCorsHeaders(result) {
     result.setHeader('Access-Control-Allow-Origin', '*');
     result.setHeader('Access-Control-Allow-Methods', 'GET');
@@ -26,24 +35,42 @@ function setCorsHeaders(result) {
     result.setHeader('Access-Control-Max-Age', '3600');
 }
 
+/**
+ * Send a response.
+ * @param result {} The result.
+ * @param data {{}} The data to send.
+ * @returns {*}
+ */
 function sendResponse(result, data) {
     setCorsHeaders(result);
     return result.json(data);
 }
 
+/**
+ * Send an error response.
+ * @param result {} The result
+ * @param errorNumber {string || number} The error number
+ * @param errorText {string} The error message.
+ * @returns {*}
+ */
 function sendError(result, errorNumber, errorText = "") {
     setCorsHeaders(result);
     return result.status(errorNumber).json({ error: errorText });
 }
 
+/**
+ * The request handler.
+ * @param req {} The request
+ * @param res {} The result.
+ * @returns {Promise<*>}
+ */
 export default async function handler(req, res) {
-    // Handle preflight
     if (req.method === 'OPTIONS') {
         return sendResponse(res, {});
     }
 
     try {
-        const {postcode, number, suffix = ''} = req.query;
+        const {postcode, number, suffix = ''} = getAddressInformation(req);
 
         if (!postcode || !number)
             return sendError(res, 400, 'Missing postcode or number');

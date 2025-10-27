@@ -19,7 +19,7 @@ class GarbageApiService {
     static CACHE_VALIDITY = 1000 * 60 * 60 * 24 * 90;
 
     private cacheKey(address: Address) : string {
-        return `${address.postcode}${address.number}${address.suffix || ''}`;
+        return `${address.postcode.toUpperCase()}${address.number}${address.suffix?.toUpperCase() || ''}`;
     }
 
     private getCached(address: Address) : GarbageData | null {
@@ -103,9 +103,9 @@ class GarbageApiService {
     private async fetchData(address: Address) : Promise<GarbageData> {
         try {
             const params = new URLSearchParams({
-                postcode: address.postcode,
+                postcode: address.postcode.toUpperCase(),
                 number: address.number,
-                suffix: address.suffix || ''
+                suffix: address.suffix?.toUpperCase() || ''
             });
 
             const response = await fetch(`${GarbageApiService.BASE_URL}?${params.toString()}`, {

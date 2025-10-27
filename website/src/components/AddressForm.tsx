@@ -94,9 +94,9 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, initialAddr
 
         try {
             const address: Address = {
-                postcode: formState.Address.postcode.trim(),
+                postcode: formState.Address.postcode.trim().toUpperCase(),
                 number: formState.Address.number.trim(),
-                suffix: formState.Address.suffix?.trim() || undefined
+                suffix: formState.Address.suffix?.trim().toUpperCase() || undefined
             };
 
             await onSubmit(address);
