@@ -31,3 +31,10 @@ export interface GarbageData {
     pickups: GarbagePickup[];
     lastUpdated: string;
 }
+
+export type CalendarType = 'Groningen' | 'Modern';
+
+export const CalendarTypes = {
+    GRONINGEN: 'Groningen' as const,
+    MODERN: 'Modern' as const
+};

@@ -155,7 +155,9 @@ export class GarbageProvider {
             if (result.status === 204)
                 return [];
 
-            const data = await result.json();
+            const data = await result.json()
+
+            console.log(data);
 
             this.cache.add(addressId, data);
 
