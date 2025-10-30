@@ -7,11 +7,16 @@
 @theme {
   --color-brand-primary: #2563eb;
   --color-brand-secondary: #0d9488;
-  --color-garbage-restafval: #6b7280;
-  --color-garbage-gft: #059669;
-  --color-garbage-papier: #3b82f6;
-  --color-garbage-plastic: #f59e0b;
-  --color-garbage-glas: #8b5cf6;
+  --color-groningen: #e60004;
+  --color-garbage-rest: #bec4cc;
+  --color-garbage-gft: #6edd67;
+  --color-garbage-paper: #4996ec;
+  --color-garbage-plastic: #F57C00;
+  --color-garbage-glass: #FBC02D;
+  --color-garbage-kca: #c67fea;
+  --color-garbage-other: #455A64;
+  --color-garbage-christmas-red: #8b191d;
+  --color-garbage-christmas-green: #325832;
 
   --font-family-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
   --font-family-mono: 'JetBrains Mono Variable', 'Fira Code', monospace;

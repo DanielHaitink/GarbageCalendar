@@ -6,12 +6,13 @@ import {garbageApi} from "./services/garbageApi.ts";
 import {GarbageList} from "./components/GarbageList.tsx";
 import {GarbageCalendar} from "./components/GarbageCalendar.tsx";
 import {CalendarSelect, type CalendarType} from "./components/CalendarSelect.tsx";
+// import tailwindcss from "@tailwindcss/vite";
 
 function App() {
     const [currentAddress, setCurrentAddress] = useState<Address | undefined>(undefined);
     const [garbageData, setGarbageData] = useState<GarbageData | undefined>(undefined);
     const [error, setError] = useState<string | undefined>(undefined);
-    const [selectedCalendar, setSelectedCalendar] = useState<CalendarType>(CalendarTypes.GRONINGEN);
+    // const [selectedCalendar, setSelectedCalendar] = useState<CalendarType>(CalendarTypes.GRONINGEN);
 
 
     const handleAddressSubmit = async (address: Address) => {
@@ -30,10 +31,10 @@ function App() {
     }
 
     return (
-        <div className="App min-h-screen bg-fixed bg-gradient-to-br from-red-50 via-blue-50 to-green-50">
+        <div className="App min-h-screen bg-fixed bg-gradient-to-br from-red-50 via-blue-50 to-green-50 ">
             <div className="flex flex-col">
-                <header className="text-center mb-16 pt-16 animate-fade-in-up">
-                    <h1 className="font-bold text-shadow-amber-100 text-xl mb-6 text-red-500">Afvalkalender
+                <header className="text-center mb-16 pt-16 animate-fade-in-up text-co">
+                    <h1 className="font-bold text-shadow-amber-100 text-3xl mb-6 text-groningen">Afvalkalender
                         Groningen</h1>
                     {/*<p>Vul je adresgegevens in om de kalender te bekijken</p>*/}
                 </header>
@@ -55,16 +56,16 @@ function App() {
                         </div>
                     )}
 
-                    <CalendarSelect></CalendarSelect>
+                    {/*<CalendarSelect></CalendarSelect>*/}
 
                     { garbageData && (
                         <GarbageCalendar data={garbageData}/>
                     )
                     }
 
-                    {garbageData && (
-                        <GarbageList data={garbageData}/>
-                    )}
+                    {/*{garbageData && (*/}
+                    {/*    <GarbageList data={garbageData}/>*/}
+                    {/*)}*/}
 
                     {error && (
                         <div className="error">
