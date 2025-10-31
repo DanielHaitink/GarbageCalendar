@@ -1,9 +1,11 @@
-import type {Address} from "../types.ts";
+import type {Address, GarbageData} from "../types.ts";
 import * as React from "react";
 import {useState} from "react";
+import {garbageApi} from "../services/garbageApi.ts";
 
 interface AddressFormProps {
     onSubmit: (address: Address) => void;
+    onSuccess: (data: GarbageData) => void;
     initialAddress?: Address;
 }
 
@@ -19,7 +21,7 @@ interface FormState {
     isSubmitting: boolean;
 }
 
-export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, initialAddress }) => {
+export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, initialAddress }) => {
     const [formState, setFormState] = useState<FormState>({
         Address: initialAddress || {
             postcode: '',
@@ -29,6 +31,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, initialAddr
         errors: {},
         isSubmitting: false
     });
+    const [error, setError] = useState<string | undefined>(undefined);
 
     const validatePostalCode = (code: string): string | undefined => {
         if (code.length !== 6 || (code.length > 0 && !/^\d{4}[A-z]{2}$/.test(code.trim())))
@@ -87,6 +90,8 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, initialAddr
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        setError(undefined);
+
         if (!validate())
             return;
 
@@ -99,7 +104,16 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, initialAddr
                 suffix: formState.Address.suffix?.trim().toUpperCase() || undefined
             };
 
-            await onSubmit(address);
+            onSubmit(address);
+
+            try {
+                const data = await garbageApi.getGarbageData(address);
+
+                onSuccess(data);
+            } catch (e) {
+                setError(e.message || "Er is iets misgegaan");
+                console.error(e);
+            }
         } catch (e) {
             console.error(e);
             // setFormState(prevState => ({...prevState, isSubmitting: false}));
@@ -212,15 +226,24 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, initialAddr
                 type="submit"
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold
                          py-3 px-6 rounded-lg transition-colors duration-200
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex flex-row"
             >
-                Zoek ophaaldata
-            </button>
-            {formState.isSubmitting && (
-                <div className="w-full bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg">
-                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-200"></div>
+                {formState.isSubmitting && (
+                <div className="flex justify-center items-center pr-6">
+                    <div className=" animate-spin rounded-full h-6 w-6 aspect-square border-b-2 border-white"></div>
                 </div>
             )}
+                <div className={"col-span-3"}>
+                    Zoek ophaaldata
+                </div>
+            </button>
+
+            {error && (
+                <div className="w-full text-groningen font-semibold mt-6 text-center rounded-lg">
+                    {error}
+                </div>
+            )}
+
         </form>
     );
 }

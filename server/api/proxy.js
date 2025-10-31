@@ -43,6 +43,7 @@ function setCorsHeaders(result) {
  */
 function sendResponse(result, data) {
     setCorsHeaders(result);
+    result.setHeader('Content-Type', 'application/json');
     return result.json(data);
 }
 
@@ -55,7 +56,10 @@ function sendResponse(result, data) {
  */
 function sendError(result, errorNumber, errorText = "") {
     setCorsHeaders(result);
-    return result.status(errorNumber).json({ error: errorText });
+    result.status(errorNumber);
+    result.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    result.setHeader('Content-Length', errorText.length);
+    return result.end(errorText);
 }
 
 /**
@@ -85,6 +89,6 @@ export default async function handler(req, res) {
         return sendResponse(res, data);
     } catch (e) {
         console.error(e);
-        return sendError(res, 500, "Internal server error")
+        return sendError(res, 500, e.message || "Er is iets misgegaan");
     }
 }

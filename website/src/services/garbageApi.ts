@@ -116,8 +116,10 @@ class GarbageApiService {
                 }
             });
 
-            if (!response.ok)
-                throw new Error(`Failed to fetch data: ${response.statusText}`);
+            if (!response.ok) {
+                const message = await response.text() || response.statusText;
+                throw new Error(`Failed to fetch data: ${message}`);
+            }
 
             const data = await response.json();
 
@@ -131,7 +133,7 @@ class GarbageApiService {
             }
         } catch (e) {
             console.error(e);
-            throw new Error('Failed to fetch data');
+            throw e;
         }
     }
 

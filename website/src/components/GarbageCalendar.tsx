@@ -2,6 +2,7 @@ import * as React from "react";
 import type {GarbageData, GarbagePickup} from "../types.ts";
 import {getDayText, getMonthText, monthlyPickups} from "../utils/dates.ts";
 import {GarbageIcon} from "../utils/garbage.tsx";
+import {GarbageUpcoming} from "./GarbageUpcoming.tsx";
 
 
 interface GarbageCalendarProps {
@@ -28,6 +29,13 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
     return (
         <div className="calendar-container flex flex-col max-w-4xl mx-auto animate-fade-in-up rounded-xl bg-white shadow-lg p-8 dropshadow-2xl">
             {/*<h1>Garbage Calendar</h1>*/}
+
+            <div className={"calendar-upcoming mb-16"}>
+                <h2 className={"bg-groningen text-white text-xl font-bold capitalize p-2 mb-2"}>
+                    Komende week
+                </h2>
+                <GarbageUpcoming data={data}/>
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
             {

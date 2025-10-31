@@ -164,7 +164,7 @@ export class GarbageProvider {
             return data;
         } catch (e) {
             console.error(e);
-            throw new Error('Failed to get waste data');
+            throw new Error(e.message || "Er is iets misgegaan");
         }
     }
 }

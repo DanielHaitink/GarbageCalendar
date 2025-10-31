@@ -6,28 +6,25 @@ import {garbageApi} from "./services/garbageApi.ts";
 import {GarbageList} from "./components/GarbageList.tsx";
 import {GarbageCalendar} from "./components/GarbageCalendar.tsx";
 import {CalendarSelect, type CalendarType} from "./components/CalendarSelect.tsx";
+
 // import tailwindcss from "@tailwindcss/vite";
 
 function App() {
     const [currentAddress, setCurrentAddress] = useState<Address | undefined>(undefined);
     const [garbageData, setGarbageData] = useState<GarbageData | undefined>(undefined);
-    const [error, setError] = useState<string | undefined>(undefined);
+    // const [error, setError] = useState<string | undefined>(undefined);
     // const [selectedCalendar, setSelectedCalendar] = useState<CalendarType>(CalendarTypes.GRONINGEN);
 
 
-    const handleAddressSubmit = async (address: Address) => {
+    const handleAddressSubmit = (address: Address) => {
         console.log(address);
         setCurrentAddress(address);
         setGarbageData(undefined);
-        setError(undefined);
+        // setError(undefined);
+    }
 
-        try {
-            setGarbageData(await garbageApi.getGarbageData(address));
-        } catch (e) {
-            // @ts-ignore
-            setError(e.message || "Er is iets misgegaan");
-            console.error(e);
-        }
+    const handleGarbageDataSuccess = (data: GarbageData) => {
+        setGarbageData(data);
     }
 
     return (
@@ -40,8 +37,10 @@ function App() {
                 </header>
 
                 <main className="flex-grow animate-fade-in-up">
-                    {!garbageData && < AddressForm onSubmit={handleAddressSubmit}
-                                 initialAddress={currentAddress}/>
+                    {!garbageData && < AddressForm
+                        onSubmit={handleAddressSubmit}
+                        onSuccess={handleGarbageDataSuccess}
+                        initialAddress={currentAddress}/>
                     }
 
                     {currentAddress && !garbageData && (
@@ -58,7 +57,7 @@ function App() {
 
                     {/*<CalendarSelect></CalendarSelect>*/}
 
-                    { garbageData && (
+                    {garbageData && (
                         <GarbageCalendar data={garbageData}/>
                     )
                     }
@@ -66,13 +65,6 @@ function App() {
                     {/*{garbageData && (*/}
                     {/*    <GarbageList data={garbageData}/>*/}
                     {/*)}*/}
-
-                    {error && (
-                        <div className="error">
-                            <h2>Fout</h2>
-                            <p>{error}</p>
-                        </div>
-                    )}
                 </main>
 
                 <footer className="text-center text-sm mt-32 pb-8 animate-fade-in-up">
