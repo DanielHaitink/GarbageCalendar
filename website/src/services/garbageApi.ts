@@ -1,4 +1,5 @@
 import {type Address, type GarbageData, type GarbagePickup, type GarbageType, GarbageTypes} from "../types.ts";
+import {getCacheKey} from "./garbageCache.ts";
 
 
 export interface RawGarbageData {
@@ -18,12 +19,8 @@ class GarbageApiService {
     static BASE_URL = "http://localhost:3000/api/proxy"
     static CACHE_VALIDITY = 1000 * 60 * 60 * 24 * 90;
 
-    private cacheKey(address: Address) : string {
-        return `${address.postcode.toUpperCase()}${address.number}${address.suffix?.toUpperCase() || ''}`;
-    }
-
     private getCached(address: Address) : GarbageData | null {
-        const cacheKey = this.cacheKey(address);
+        const cacheKey = getCacheKey(address);
         const cache = localStorage.getItem(cacheKey);
 
         if (!cache)
@@ -32,16 +29,6 @@ class GarbageApiService {
         const data: GarbageData = JSON.parse(cache, (key, value) => {
             if (key === 'date')
                 return new Date(value);
-            // if (key === 'pickups' && Array.isArray(value) && value.length > 0)
-            //     return value.map((p: GarbagePickup) => ({
-            //         ...p,
-            //         date: new Date(p.date),
-            //         dateString: p.dateString,
-            //         placement: p.placement,
-            //         description: p.description,
-            //         id: p.id,
-            //         type: this.normalizeType(p.type)
-            //     }));
             return value;
         });
 
@@ -53,7 +40,7 @@ class GarbageApiService {
     }
 
     private cacheData(data: GarbageData) {
-        const cacheKey = this.cacheKey(data.address);
+        const cacheKey = getCacheKey(data.address);
         const jsonData = JSON.stringify(data)
         localStorage.setItem(cacheKey, jsonData);
     }
