@@ -1,12 +1,15 @@
 import type {Address, GarbageData} from "../types.ts";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {garbageApi} from "../services/garbageApi.ts";
+import {RecentSearches} from "./RecentSearches.tsx";
+import {cache} from "../services/garbageCache.ts";
 
 interface AddressFormProps {
     onSubmit: (address: Address) => void;
     onSuccess: (data: GarbageData) => void;
     initialAddress?: Address;
+    autoSubmit?: boolean;
 }
 
 interface FormError {
@@ -16,29 +19,47 @@ interface FormError {
 }
 
 interface FormState {
-    Address: Address;
+    address: Address;
     errors: FormError;
     isSubmitting: boolean;
+    autoSubmit?: boolean;
 }
 
-export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, initialAddress }) => {
+/**
+ * An address form element
+ * @param onSubmit {} The callback when the form is submitted
+ * @param onSuccess {} The callback when the data is obtained
+ * @param initialAddress {Address} An initial address, if any
+ * @param autoSubmit {boolean} Whether to autosubmit, only works if initialAddress is filled
+ * @constructor
+ */
+export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, initialAddress, autoSubmit }) => {
     const [formState, setFormState] = useState<FormState>({
-        Address: initialAddress || {
+        address: initialAddress || {
             postcode: '',
             number: '',
             suffix: ''
         },
         errors: {},
-        isSubmitting: false
+        isSubmitting: false,
+        autoSubmit: autoSubmit || false
     });
     const [error, setError] = useState<string | undefined>(undefined);
 
+    /**
+     * Validate the postal code
+     * @param code {string} The postal code
+     */
     const validatePostalCode = (code: string): string | undefined => {
         if (code.length !== 6 || (code.length > 0 && !/^\d{4}[A-z]{2}$/.test(code.trim())))
             return "Postcode moet 4 cijfers en 2 letters bevatten";
         return undefined;
     }
 
+    /**
+     * Validate the number
+     * @param number {string} The number
+     */
     const validateNumber = (number: string): string | undefined => {
         if (number.length > 4)
             return "Huisnummer mag maximaal 4 cijfers bevatten";
@@ -48,6 +69,10 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
         return undefined;
     }
 
+    /**
+     * Validate the suffix
+     * @param suffix {string} The suffix
+     */
     const validateSuffix = (suffix: string): string | undefined => {
         if (suffix?.length > 2)
             return "Toevoeging mag maximaal 2 karakters bevatten";
@@ -57,12 +82,17 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
         return undefined;
     }
 
-    const updateField = (field: keyof Pick<Address, "postcode" | "number" | "suffix">, value: string): void => {
-        setFormState(prevState => {
+    /**
+     * Update a field in the form
+     * @param field {string} A field of the form
+     * @param value {string} The value of the field
+     */
+    const updateField = (field: keyof Pick<Address, "postcode" | "number" | "suffix">, value: string) => {
+        return setFormState(prevState => {
             const newState = {
                 ...prevState,
-                Address: {
-                    ...prevState.Address,
+                address: {
+                    ...prevState.address,
                     [field]: value
                 }
             };
@@ -70,14 +100,17 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
             delete newState.errors[field as keyof FormError];
 
             return newState;
-        })
+        });
     };
 
+    /**
+     * Validate the form
+     */
     const validate = (): boolean => {
         const errors = {
-            postcode: validatePostalCode(formState.Address.postcode),
-            number: validateNumber(formState.Address.number),
-            suffix: validateSuffix(formState.Address.suffix || '')
+            postcode: validatePostalCode(formState.address.postcode),
+            number: validateNumber(formState.address.number),
+            suffix: validateSuffix(formState.address.suffix || '')
         };
 
         setFormState(prevState => ({...prevState, errors: errors}));
@@ -87,8 +120,12 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
         return !Object.values(errors).some(e => e !== undefined);
     }
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    /**
+     * Handle the submission
+     * @param e {React.FormEvent} The form event, if any.
+     */
+    const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+        e?.preventDefault();
 
         setError(undefined);
 
@@ -99,9 +136,9 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
 
         try {
             const address: Address = {
-                postcode: formState.Address.postcode.trim().toUpperCase(),
-                number: formState.Address.number.trim(),
-                suffix: formState.Address.suffix?.trim().toUpperCase() || undefined
+                postcode: formState.address.postcode.trim().toUpperCase(),
+                number: formState.address.number.trim(),
+                suffix: formState.address.suffix?.trim().toUpperCase() || undefined
             };
 
             onSubmit(address);
@@ -110,23 +147,45 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
                 const data = await garbageApi.getGarbageData(address);
 
                 onSuccess(data);
-            } catch (e) {
-                setError(e.message || "Er is iets misgegaan");
-                console.error(e);
+            } catch (error) {
+                // @ts-ignore
+                setError(error.message || "Er is iets misgegaan");
+                console.error(error);
             }
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            console.error(error);
             // setFormState(prevState => ({...prevState, isSubmitting: false}));
         } finally {
             setFormState(prevState => ({...prevState, isSubmitting: false}));
         }
     };
 
+    useEffect(() => {
+        if (formState.autoSubmit) {
+            setFormState(prevState => ({...prevState, autoSubmit: false}));
+           handleSubmit();
+        }
+    }, [formState.address, formState.autoSubmit, handleSubmit]);
+
+    /**
+     * Fill the form and automatically submit
+     * @param address {Address} The address
+     */
+    const fillAndSearch = (address: Address) => {
+        updateField("postcode", address.postcode.trim());
+        updateField("number", address.number);
+        updateField("suffix", address.suffix || '');
+
+        setFormState(prevState => ({...prevState, autoSubmit: true}));
+    }
+
     return (
         <form
-            className="bg-white p-8 rounded-xl shadow-lg mb-8 max-w-md mx-auto"
+            className="bg-white p-8 rounded-xl shadow-lg mb-8 w-md mx-auto"
             onSubmit={handleSubmit}
         >
+            <RecentSearches recentSearches={cache.getRecentSearches()} onClick={fillAndSearch}></RecentSearches>
+
             <div className="mb-6">
                 <label
                     htmlFor="postalCode"
@@ -137,7 +196,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
                 <input
                     id="postalCode"
                     type="text"
-                    value={formState.Address.postcode}
+                    value={formState.address.postcode}
                     onChange={(e) => {
                         updateField("postcode", e.target.value)
                     }}
@@ -171,7 +230,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
                 <input
                     id="houseNumber"
                     type="text"
-                    value={formState.Address.number}
+                    value={formState.address.number}
                     onChange={(e) => updateField("number", e.target.value)}
                     placeholder="123"
                     className={`w-full px-4 py-3 border-2 border-gray-300 rounded-lg
@@ -202,7 +261,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
                 <input
                     id="suffix"
                     type="text"
-                    value={formState.Address.suffix}
+                    value={formState.address.suffix}
                     onChange={(e) => updateField("suffix", e.target.value)}
                     placeholder="A"
                     className={`w-full px-4 py-3 border-2 border-gray-300 rounded-lg

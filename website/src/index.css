@@ -85,7 +85,6 @@
     outline-offset: 2px;
   }
 
-
   /* Custom scrollbar for webkit browsers */
   ::-webkit-scrollbar {
     width: 8px;
@@ -106,6 +105,11 @@
   /* Custom selection color */
   ::selection {
     @apply bg-blue-100 text-blue-900;
+  }
+
+  main {
+    @apply w-3xl;
+    @apply w-auto;
   }
 }
 

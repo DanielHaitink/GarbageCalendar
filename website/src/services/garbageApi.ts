@@ -1,5 +1,6 @@
 import {type Address, type GarbageData, type GarbagePickup, type GarbageType, GarbageTypes} from "../types.ts";
-import {getCacheKey} from "./garbageCache.ts";
+import {cache} from "./garbageCache.ts";
+import {env} from "../utils/env.ts";
 
 
 export interface RawGarbageData {
@@ -16,35 +17,33 @@ export interface RawGarbageData {
 }
 
 class GarbageApiService {
-    static BASE_URL = "http://localhost:3000/api/proxy"
-    static CACHE_VALIDITY = 1000 * 60 * 60 * 24 * 90;
+    static BASE_URL = env.isDevelopment ? "http://localhost:3000/api/proxy" : "https://garbage.lionsdensoftware.nl";
 
+    static DEV = import.meta.env.DEV;
+    /**
+     * Get the cached garbage data or null if not available.
+     * @param address {Address} The address.
+     * @private
+     */
     private getCached(address: Address) : GarbageData | null {
-        const cacheKey = getCacheKey(address);
-        const cache = localStorage.getItem(cacheKey);
-
-        if (!cache)
-            return null;
-
-        const data: GarbageData = JSON.parse(cache, (key, value) => {
-            if (key === 'date')
-                return new Date(value);
-            return value;
-        });
-
-        if (new Date(data.lastUpdated).getTime() - new Date().getTime() >= GarbageApiService.CACHE_VALIDITY)
-            return null;
-
-        console.log("Obtaining data from cache: ", data.address.postcode, data.address.number, data.address.suffix || "")
-        return data;
+        return cache.getCached(address);
     }
 
+    /**
+     * Cache the garbage data.
+     * @param data {GarbageData} The garbage data to cache.
+     * @private
+     */
     private cacheData(data: GarbageData) {
-        const cacheKey = getCacheKey(data.address);
-        const jsonData = JSON.stringify(data)
-        localStorage.setItem(cacheKey, jsonData);
+        cache.storeCached(data.address, data);
+        cache.addRecentSearch(data.address);
     }
 
+    /**
+     * Normalize the type name.
+     * @param type {string} The type
+     * @private
+     */
     private normalizeType(type: string): GarbageType {
         switch (type.toLowerCase()) {
             case 'restafval':
@@ -70,6 +69,11 @@ class GarbageApiService {
         return GarbageTypes.ANDERS;
     }
 
+    /**
+     * Format garbage data.
+     * @param data {RawGarbageData} The raw garbage data from the api
+     * @private
+     */
     private formatGarbageData(data: RawGarbageData[]): GarbagePickup[] {
         const result = [];
 
@@ -87,6 +91,11 @@ class GarbageApiService {
         return result;
     }
 
+    /**
+     * Fetch data from the server
+     * @param address
+     * @private
+     */
     private async fetchData(address: Address) : Promise<GarbageData> {
         try {
             const params = new URLSearchParams({
@@ -124,6 +133,10 @@ class GarbageApiService {
         }
     }
 
+    /**
+     * Get the garbage data from the address.
+     * @param address {Address} The address
+     */
     async getGarbageData(address: Address) : Promise<GarbageData> {
         const data = this.getCached(address) || await this.fetchData(address);
         this.cacheData(data);

@@ -60,7 +60,7 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
                 </h2>
             {
                 Object.keys(uniquePickup).map(key => (
-                    <div className="calendar-day grid grid-cols-3 relative group cursor-pointer ">
+                    <div key={key} className="calendar-day grid grid-cols-3 relative group cursor-pointer ">
                         <h3>
                             {key}
                         </h3>

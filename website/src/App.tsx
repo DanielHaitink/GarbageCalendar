@@ -1,20 +1,14 @@
 import {useState} from 'react'
 import './App.css'
 import {AddressForm} from "./components/AddressForm.tsx";
-import {type Address, CalendarTypes, type GarbageData, GarbageTypes} from "./types.ts";
-import {garbageApi} from "./services/garbageApi.ts";
-import {GarbageList} from "./components/GarbageList.tsx";
+import {type Address, type GarbageData} from "./types.ts";
 import {GarbageCalendar} from "./components/GarbageCalendar.tsx";
-import {CalendarSelect, type CalendarType} from "./components/CalendarSelect.tsx";
 
 // import tailwindcss from "@tailwindcss/vite";
 
 function App() {
     const [currentAddress, setCurrentAddress] = useState<Address | undefined>(undefined);
     const [garbageData, setGarbageData] = useState<GarbageData | undefined>(undefined);
-    // const [error, setError] = useState<string | undefined>(undefined);
-    // const [selectedCalendar, setSelectedCalendar] = useState<CalendarType>(CalendarTypes.GRONINGEN);
-
 
     const handleAddressSubmit = (address: Address) => {
         console.log(address);
@@ -30,13 +24,15 @@ function App() {
     return (
         <div className="App min-h-screen bg-fixed bg-gradient-to-br from-red-50 via-blue-50 to-green-50 ">
             <div className="flex flex-col">
-                <header className="text-center mb-16 pt-16 animate-fade-in-up text-co">
+                <header className="text-center mb-16 pt-16">
                     <h1 className="font-bold text-shadow-amber-100 text-3xl mb-6 text-groningen">Afvalkalender
                         Groningen</h1>
                     {/*<p>Vul je adresgegevens in om de kalender te bekijken</p>*/}
                 </header>
 
                 <main className="flex-grow animate-fade-in-up">
+                    {/*<RecentSearches recentSearches={cache.getRecentSearches()}></RecentSearches>*/}
+
                     {!garbageData && < AddressForm
                         onSubmit={handleAddressSubmit}
                         onSuccess={handleGarbageDataSuccess}
