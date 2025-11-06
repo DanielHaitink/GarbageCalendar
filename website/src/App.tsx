@@ -4,17 +4,20 @@ import {AddressForm} from "./components/AddressForm.tsx";
 import {type Address, type GarbageData} from "./types.ts";
 import {GarbageCalendar} from "./components/GarbageCalendar.tsx";
 
-// import tailwindcss from "@tailwindcss/vite";
-
 function App() {
-    const [currentAddress, setCurrentAddress] = useState<Address | undefined>(undefined);
+    const parameters = new URLSearchParams(document.location.search);
+    const [currentAddress, setCurrentAddress] = useState<Address | undefined>(
+        parameters.get("postcode") !== null && parameters.get("number") !== null ? {
+        postcode: parameters.get("postcode") || "",
+        number: Number.parseInt(parameters.get("number") || ""),
+        suffix: parameters.get("suffix") || ""
+     } : undefined);
     const [garbageData, setGarbageData] = useState<GarbageData | undefined>(undefined);
 
     const handleAddressSubmit = (address: Address) => {
         console.log(address);
         setCurrentAddress(address);
         setGarbageData(undefined);
-        // setError(undefined);
     }
 
     const handleGarbageDataSuccess = (data: GarbageData) => {
@@ -27,16 +30,14 @@ function App() {
                 <header className="text-center mb-16 pt-16">
                     <h1 className="font-bold text-shadow-amber-100 text-3xl mb-6 text-groningen">Afvalkalender
                         Groningen</h1>
-                    {/*<p>Vul je adresgegevens in om de kalender te bekijken</p>*/}
                 </header>
 
                 <main className="flex-grow animate-fade-in-up">
-                    {/*<RecentSearches recentSearches={cache.getRecentSearches()}></RecentSearches>*/}
-
                     {!garbageData && < AddressForm
                         onSubmit={handleAddressSubmit}
                         onSuccess={handleGarbageDataSuccess}
-                        initialAddress={currentAddress}/>
+                        initialAddress={currentAddress}
+                        autoSubmit={parameters.get("autoSubmit") !== null || false}/>
                     }
 
                     {currentAddress && !garbageData && (
@@ -46,21 +47,18 @@ function App() {
                     {currentAddress && garbageData && (
                         <div className="current-address text-center text-xl mb-16">
                             <p>
-                                {currentAddress.postcode} {currentAddress.number} {currentAddress.suffix}
+                                {garbageData.rawAddress.street} {garbageData.rawAddress.housenumber}{garbageData.rawAddress.addition}
+                            </p>
+                            <p>
+                                {currentAddress.postcode}
                             </p>
                         </div>
                     )}
-
-                    {/*<CalendarSelect></CalendarSelect>*/}
 
                     {garbageData && (
                         <GarbageCalendar data={garbageData}/>
                     )
                     }
-
-                    {/*{garbageData && (*/}
-                    {/*    <GarbageList data={garbageData}/>*/}
-                    {/*)}*/}
                 </main>
 
                 <footer className="text-center text-sm mt-32 pb-8 animate-fade-in-up">

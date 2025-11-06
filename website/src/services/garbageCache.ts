@@ -11,7 +11,7 @@ export const getCacheKey = (address: Address) => {
 class GarbageCache {
     static RECENT_SEARCHES_KEY = "recentSearches";
     static CACHE_VALIDITY = 1000 * 60 * 60 * 24 * 90;
-    static RECENT_SEARCH_MAX = 5;
+    static RECENT_SEARCH_MAX = 3;
 
     recentSearches: Address[] = [];
 

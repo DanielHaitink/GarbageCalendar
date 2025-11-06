@@ -2,8 +2,25 @@ import {type Address, type GarbageData, type GarbagePickup, type GarbageType, Ga
 import {cache} from "./garbageCache.ts";
 import {env} from "../utils/env.ts";
 
-
 export interface RawGarbageData {
+    address: RawGarbageAddress;
+    pickups: RawGarbagePickup[];
+    lastUpdated: string;
+}
+
+export interface RawGarbageAddress {
+    addressId: string;
+    addition: string;
+    zipcode: string;
+    street: string;
+    city: string;
+    housenumber: number;
+    municipalityId: string;
+    latitude: number;
+    longitude: number;
+}
+
+export interface RawGarbagePickup {
     year: number;
     month: number;
     day: number;
@@ -57,6 +74,7 @@ class GarbageApiService {
             case 'kca':
                 return GarbageTypes.KCA;
             case 'kerstbomen':
+            case 'kerst':
                 return GarbageTypes.KERSTBOMEN;
             case 'glas':
                 return GarbageTypes.GLAS;
@@ -74,7 +92,7 @@ class GarbageApiService {
      * @param data {RawGarbageData} The raw garbage data from the api
      * @private
      */
-    private formatGarbageData(data: RawGarbageData[]): GarbagePickup[] {
+    private formatGarbageData(data: RawGarbagePickup[]): GarbagePickup[] {
         const result = [];
 
         for (const item of data) {
@@ -100,7 +118,7 @@ class GarbageApiService {
         try {
             const params = new URLSearchParams({
                 postcode: address.postcode.toUpperCase(),
-                number: address.number,
+                number: address.number.toFixed(0),
                 suffix: address.suffix?.toUpperCase() || ''
             });
 
@@ -112,20 +130,25 @@ class GarbageApiService {
                 }
             });
 
+            console.log(response);
+
             if (!response.ok) {
                 const message = await response.text() || response.statusText;
                 throw new Error(`Failed to fetch data: ${message}`);
             }
 
-            const data = await response.json();
+            const data: RawGarbageData = await response.json();
 
-            if (!data || !Array.isArray(data))
+            console.log(data);
+
+            if (!data || !Array.isArray(data.pickups))
                 throw new Error('Invalid data');
 
             return {
                 address,
-                pickups: this.formatGarbageData(data),
-                lastUpdated: new Date().toISOString()
+                rawAddress: data.address,
+                pickups: this.formatGarbageData(data.pickups),
+                lastUpdated: data.lastUpdated,
             }
         } catch (e) {
             console.error(e);

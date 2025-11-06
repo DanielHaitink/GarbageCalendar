@@ -77,18 +77,18 @@ export class GarbageProvider {
     }
 
     /**
-     * Obtain the address ID of the server for the given address.
-     * The function will throw an error if no address ID can be obtained.
+     * Obtain the address information of the server for the given address.
+     * The function will throw an error if no address information can be obtained.
      * @param postalCode {string} The postal code
      * @param houseNumber {string} The number as string
      * @param suffix {string} The suffix, if applicable.
-     * @returns {Promise<string>} The address ID.
+     * @returns {Promise<{}>} The address object.
      */
-    async getAddressId(postalCode, houseNumber, suffix = '') {
+    async getAddress(postalCode, houseNumber, suffix = '') {
         const addressKey = this.#getAddressKey(postalCode, houseNumber, suffix);
 
         if (this.IDCache.has(addressKey))
-            return this.IDCache.get(addressKey);
+            return JSON.parse(this.IDCache.get(addressKey));
 
         if (!await this.#authenticate())
             throw new Error('Failed to authenticate');
@@ -119,11 +119,9 @@ export class GarbageProvider {
 
         for (const address of addresses) {
             if (address.addition.toLowerCase() === suffix.toLowerCase()) {
-                const id = address.addressId.toLowerCase();
+                this.IDCache.add(addressKey, JSON.stringify(address))
 
-                this.IDCache.add(addressKey, id)
-
-                return id;
+                return address;
             }
         }
 

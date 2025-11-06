@@ -18,8 +18,14 @@ interface FormError {
     suffix?: string
 }
 
+interface FormAddress {
+    postcode: string;
+    number: string;
+    suffix?: string;
+}
+
 interface FormState {
-    address: Address;
+    address: FormAddress;
     errors: FormError;
     isSubmitting: boolean;
     autoSubmit?: boolean;
@@ -35,10 +41,10 @@ interface FormState {
  */
 export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, initialAddress, autoSubmit }) => {
     const [formState, setFormState] = useState<FormState>({
-        address: initialAddress || {
-            postcode: '',
-            number: '',
-            suffix: ''
+        address: {
+            postcode: initialAddress?.postcode || '',
+            number: initialAddress?.number.toFixed(0) || '',
+            suffix: initialAddress?.suffix || ''
         },
         errors: {},
         isSubmitting: false,
@@ -137,7 +143,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
         try {
             const address: Address = {
                 postcode: formState.address.postcode.trim().toUpperCase(),
-                number: formState.address.number.trim(),
+                number: Number.parseInt(formState.address.number),
                 suffix: formState.address.suffix?.trim().toUpperCase() || undefined
             };
 
@@ -173,7 +179,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
      */
     const fillAndSearch = (address: Address) => {
         updateField("postcode", address.postcode.trim());
-        updateField("number", address.number);
+        updateField("number", address.number.toFixed(0));
         updateField("suffix", address.suffix || '');
 
         setFormState(prevState => ({...prevState, autoSubmit: true}));

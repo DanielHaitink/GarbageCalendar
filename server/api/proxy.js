@@ -79,14 +79,14 @@ export default async function handler(req, res) {
         if (!postcode || !number)
             return sendError(res, 400, 'Missing postcode or number');
 
-        const id = await garbageProvider.getAddressId(postcode, number, suffix);
+        const address = await garbageProvider.getAddress(postcode, number, suffix);
 
-        if (!id)
+        if (!address || !address.addressId)
             return sendError(res, 404, 'Address not found');
 
-        const data = await garbageProvider.getWasteData(id);
+        const data = await garbageProvider.getWasteData(address.addressId);
 
-        return sendResponse(res, data);
+        return sendResponse(res, {address: address, pickups: data, lastUpdated: new Date().toISOString()});
     } catch (e) {
         console.error(e);
         return sendError(res, 500, e.message || "Er is iets misgegaan");

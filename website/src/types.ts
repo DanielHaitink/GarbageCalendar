@@ -1,3 +1,5 @@
+import type {RawGarbageAddress} from "./services/garbageApi.ts";
+
 export type GarbageType = 'restafval' | 'gft' | 'papier' | 'plastic' | 'glas' | 'kca' | 'kerstbomen' | 'ander';
 
 export const GarbageTypes = {
@@ -22,12 +24,13 @@ export interface GarbagePickup {
 
 export interface Address {
     postcode: string;
-    number: string;
+    number: number;
     suffix?: string;
 }
 
 export interface GarbageData {
     address: Address;
+    rawAddress: RawGarbageAddress;
     pickups: GarbagePickup[];
     lastUpdated: string;
 }
