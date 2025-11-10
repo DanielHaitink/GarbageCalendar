@@ -42,8 +42,9 @@ export class GarbageCache {
      * @returns {boolean} True if the key exists.
      */
     has(key, checkValidity = false) {
+        // TODO: check for new year and cached data is in past year
         return this.cache[key] &&
-            (!checkValidity || this.cache[key].a + this.#validity < Date.now());
+            (!checkValidity || Date.now() < this.cache[key].a + this.#validity);
     }
 
     /**
@@ -63,7 +64,7 @@ export class GarbageCache {
      */
     clean() {
         for (const key in this.cache)
-            if (this.cache[key].a + this.#validity < Date.now())
+            if (Date.now() > this.cache[key].a + this.#validity)
                 delete this.cache[key];
     }
 

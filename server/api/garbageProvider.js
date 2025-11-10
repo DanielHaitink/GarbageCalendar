@@ -46,6 +46,8 @@ export class GarbageProvider {
         if (this.isAuthenticated())
              return true;
 
+        console.log('Authenticating...');
+
         const result = await fetch(
             `${GarbageProvider.AUTH_URL}?key=${GarbageProvider.API_KEY}`,
             {method: 'POST'}
@@ -87,7 +89,7 @@ export class GarbageProvider {
     async getAddress(postalCode, houseNumber, suffix = '') {
         const addressKey = this.#getAddressKey(postalCode, houseNumber, suffix);
 
-        if (this.IDCache.has(addressKey))
+        if (this.IDCache.has(addressKey, true))
             return JSON.parse(this.IDCache.get(addressKey));
 
         if (!await this.#authenticate())
