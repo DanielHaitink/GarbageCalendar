@@ -31,7 +31,7 @@ const getDaysUntilName = (date: Date) => {
 export const GarbageUpcoming: React.FC<GarbageUpcomingProps> = ({data}) => {
 
     return (
-        <div>
+        <div className={""}>
             {filteredPickups(data.pickups).map( (value) => {
             return (
                 <div key={value.id} className="calendar-day grid grid-cols-4">

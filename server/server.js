@@ -70,7 +70,6 @@ class Server {
         this.app.get('/api/proxy', (req, res) => {
             this.proxy(req, res);
         });
-
     }
 
     start() {

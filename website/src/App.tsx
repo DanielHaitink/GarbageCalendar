@@ -25,9 +25,9 @@ function App() {
     }
 
     return (
-        <div className="App min-h-screen bg-fixed bg-gradient-to-br from-red-50 via-blue-50 to-green-50 ">
+        <div className="App min-h-screen bg-fixed bg-gradient-to-br from-red-50 via-blue-50 to-green-50 print:bg-none print:bg-white print:text-black">
             <div className="flex flex-col">
-                <header className="text-center mb-16 pt-16">
+                <header className="text-center mb-16 pt-16 print:hidden">
                     <h1 className="font-bold text-shadow-amber-100 text-3xl mb-6 text-groningen">Afvalkalender
                         Groningen</h1>
                 </header>
@@ -44,28 +44,18 @@ function App() {
                         <div className="current-address text-center text-xl mb-16"></div>
                     )}
 
-                    {currentAddress && garbageData && (
-                        <div className="current-address text-center text-xl mb-16">
-                            <p>
-                                {garbageData.rawAddress.street} {garbageData.rawAddress.housenumber}{garbageData.rawAddress.addition}
-                            </p>
-                            <p>
-                                {currentAddress.postcode}
-                            </p>
-                        </div>
-                    )}
-
                     {garbageData && (
                         <GarbageCalendar data={garbageData}/>
                     )
                     }
                 </main>
 
-                <footer className="text-center text-sm mt-32 pb-8 animate-fade-in-up">
+                <footer className="text-center text-sm mt-32 pb-8 animate-fade-in-up
+                print:absolute print:-bottom-0 print:left-0 print:w-full print:text-left print:text-xs print:m-0 print:p-0">
                     Gemaakt door <a href="https://lionsdensoftware.nl">Lions Den Software</a> | <a
                     href="https://danielhaitink.nl" target="_blank" rel="noreferrer">Daniël Haitink</a>
                     <br/>
-                    <a href="https://github.com/danielhaitink/garbage-calendar" target="_blank" rel="noreferrer">Bekijk
+                    <a href="https://github.com/danielhaitink/garbage-calendar" target="_blank" rel="noreferrer" className={"print:hidden"}>Bekijk
                         de code op Github</a>
                 </footer>
             </div>

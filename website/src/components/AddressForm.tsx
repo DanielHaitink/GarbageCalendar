@@ -187,10 +187,16 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
 
     return (
         <form
-            className="bg-white p-8 rounded-xl shadow-lg mb-8 w-md mx-auto"
+            className="bg-white p-8 rounded-xl shadow-lg mb-8 w-md mx-auto print:hidden"
             onSubmit={handleSubmit}
         >
             <RecentSearches recentSearches={cache.getRecentSearches()} onClick={fillAndSearch}></RecentSearches>
+
+            <div className="mb-6">
+                <p className="text-center text-l">
+                    Vul hieronder het adres in om de afvalkalender te bekijken
+                </p>
+            </div>
 
             <div className="mb-6">
                 <label
