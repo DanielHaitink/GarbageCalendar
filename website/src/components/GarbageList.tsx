@@ -40,7 +40,7 @@ const GarbageTypeColor = (type: GarbageType) => {
             return "to-garbage-glass hover:to-purple-600";
         case "ander":
         default:
-            return "to-rgarbage-other hover:to-blue-600";
+            return "to-garbage-other hover:to-blue-600";
     }
 }
 
@@ -73,7 +73,7 @@ export const GarbageList: React.FC<GarbageListProps> = ({data}) => {
     };
 
     return (
-        <div className="garbage-list flex flex-col max-w-4xl mx-auto animate-fade-in-up
+        <div className="garbage-list flex flex-col max-w-4xl mx-auto 
         text-center rounded-xl bg-white shadow-lg p-8 dropshadow-2xl relative">
             <h2 className="text-xl text-red-500 font-bold mb-16">Afvalkalender</h2>
 

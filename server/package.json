@@ -1,18 +1,21 @@
 {
   "name": "garbage-groningen-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Garbage api provider",
   "license": "ISC",
-  "author": "",
+  "author": "Daniel Haitink",
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "dev": "vercel dev",
-    "start": "vercel start"
+    "start": "node server.js",
+    "vercel-dev": "vercel dev",
+    "vercel-start": "vercel start"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
     "node-fetch": "^3.3.2"
   }
 }

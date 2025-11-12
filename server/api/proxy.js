@@ -1,6 +1,7 @@
 import {GarbageProvider} from "./garbageProvider.js";
 
 const garbageProvider = new GarbageProvider(GarbageProvider.PROVIDER_GRONINGEN);
+// const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
 /**
  * Get the address information from the request.
@@ -29,7 +30,7 @@ function getAddressInformation(request) {
  * @param result {} The result
  */
 function setCorsHeaders(result) {
-    result.setHeader('Access-Control-Allow-Origin', '*');
+    result.setHeader('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || '*');
     result.setHeader('Access-Control-Allow-Methods', 'GET');
     result.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     result.setHeader('Access-Control-Max-Age', '3600');

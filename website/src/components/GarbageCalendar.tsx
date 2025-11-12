@@ -1,7 +1,7 @@
 import * as React from "react";
 import type {GarbageData, GarbagePickup} from "../types.ts";
 import {getDayText, getMonthText, monthlyPickups} from "../utils/dates.ts";
-import {GarbageIcon} from "../utils/garbage.tsx";
+import {GarbageIcon, GarbageTypeLabel} from "../utils/garbage.tsx";
 import {GarbageUpcoming} from "./GarbageUpcoming.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPrint} from "@fortawesome/free-solid-svg-icons";
@@ -33,7 +33,7 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
 
     return (
         <div
-            className="calendar-container flex flex-col max-w-4xl mx-auto animate-fade-in-up rounded-xl bg-white shadow-lg p-8 dropshadow-2xl
+            className="calendar-container flex flex-col max-w-4xl mx-auto  rounded-xl bg-white shadow-lg p-8 dropshadow-2xl
                 print:w-full print:h-full print:rounded-none print:shadow-none print:p-0">
             <button onClick={print} className={"fixed right-50 bottom-10 w-16 h-16 bg-groningen rounded-4xl drop-shadow-xl shadow-md z-50 hover:bg-red-500 print:hidden"}>
                 <FontAwesomeIcon icon={faPrint} color={"#f1f1f1"}></FontAwesomeIcon>
@@ -59,15 +59,16 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
                     <div className="grid grid-cols-2 gap-4 print:grid-cols-3 print:gap-2">
                         {
                             months.map((month, index) => (
-                                <div key={index} className={"calendar-month"}>
+                                <div key={index} className={"calendar-month break-inside-avoid"}>
                                     <h2 className="bg-groningen text-white font-bold capitalize p-2 mb-2 print:p-0 print:pl-1 print:mb-1 print:text-sm">{getMonthText(index)}</h2>
                                     {month.map((pickup: GarbagePickup) => (
                                         <div key={pickup.id}
-                                             className="calendar-day grid grid-cols-3 relative group print:text-sm ">
-                                            <div>{getDayText(pickup.date)}</div>
+                                             className="calendar-day grid grid-cols-5 relative group print:text-sm">
                                             <div>{pickup.date.getDate()}</div>
+                                            <div className={"col-span-2"}>{getDayText(pickup.date)}</div>
+                                            {/*<div className={"hidden print:block"}></div>*/}
                                             <div
-                                                className={"capitalize"}>{GarbageIcon(pickup.type)} {pickup.type} </div>
+                                                className={"capitalize col-span-2"}><span className={""}>{GarbageIcon(pickup.type)} </span>{GarbageTypeLabel(pickup.type)} </div>
                                         </div>
                                     ))}
                                 </div>
@@ -75,15 +76,15 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
                         }
                     </div>
 
-                    <div className={"calendar-placement mt-16 print:mt-4"}>
+                    <div className={"calendar-placement mt-16 print:mt-4 break-inside-avoid"}>
                         <h2 className={"text-xl font-bold mb-4 print:text-lg print:font-bold print:mb-2"}>
                             Inleverinformatie
                         </h2>
                         {
-                            Object.keys(uniquePickup).map(key => (
+                            Object.keys(uniquePickup).map((key) => (
                                 <div key={key} className="calendar-day grid grid-cols-3 relative group print:text-sm ">
                                     <h3>
-                                        {key}
+                                        {GarbageTypeLabel(key)}
                                     </h3>
                                     <p className={"col-span-2"}>
                                         {uniquePickup[key]}

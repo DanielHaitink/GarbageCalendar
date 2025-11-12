@@ -1,8 +1,12 @@
 import * as fs from "node:fs/promises";
 import express from "express";
+import rateLimit from "express-rate-limit";
 import https from "https";
 import handler from "./api/proxy.js";
 import cors from "cors";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 class SslCertificate {
     constructor(key, cert) {
@@ -39,10 +43,18 @@ class Server {
     port = 0;
     https = null;
     proxy = handler;
+    limiter = rateLimit({
+        windowMs: 5 * 60 * 1000,
+        limit: 20,
+        standardHeaders: true,
+        legacyHeaders: false,
+    });
 
     constructor(port = Server.DEFAULT_PORT, sslCertificate = null) {
         if (!sslCertificate)
-            console.log("⚠️ No SSL certificate provided, running in development mode");
+            console.log("⚠️ No SSL certificate provided, running as http server");
+        else
+            console.log("SSL certificate provided, running as https server");
 
         this.app = express();
         this.port = port;
@@ -61,11 +73,8 @@ class Server {
 
         this.app.use(cors());
         this.app.use(express.json());
-        this.app.use(express.urlencoded({ extended: true }));
-
-        this.app.get('/', (req, res) => {
-            res.end('Hello World!');
-        });
+        this.app.use(express.urlencoded({extended: true}));
+        this.app.use(this.limiter);
 
         this.app.get('/api/proxy', (req, res) => {
             this.proxy(req, res);
@@ -85,5 +94,5 @@ class Server {
     }
 }
 
-const server = new Server(3000); //await SslCertificate.load("./test.key", "./test.crt"
+const server = new Server(process.env.PORT || 3000); //await SslCertificate.load("./test.key", "./test.crt"
 server.start();

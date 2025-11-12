@@ -33,7 +33,7 @@ export const GarbageIcon = (garbageType: GarbageType) => {
     }
 }
 
-export const GarbageTypeLabel = (type: GarbageType) => {
+export const GarbageTypeLabel = (type: GarbageType | string) => {
     switch (type) {
         case "gft":
             return "GFT";
@@ -46,7 +46,7 @@ export const GarbageTypeLabel = (type: GarbageType) => {
         case "kca":
             return "KCA";
         case "kerstbomen":
-            return "Kerstbomen";
+            return "Kerstboom";
         case "ander":
             return "Ander";
         case "restafval":

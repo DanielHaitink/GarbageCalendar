@@ -22,7 +22,8 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({ recentSearches, 
     ));
 
     return (
-        <div className="flex gap-4 text-center mb-10 max-w-md mx-auto justify-center justify-self-center flex-wrap">
+        recentSearches.length === 0 ? null :
+        <div className="flex gap-4 text-center mb-8 max-w-md mx-auto justify-center justify-self-center flex-wrap">
             {recentSearchesList}
         </div>
     );

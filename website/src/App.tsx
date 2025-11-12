@@ -3,6 +3,7 @@ import './App.css'
 import {AddressForm} from "./components/AddressForm.tsx";
 import {type Address, type GarbageData} from "./types.ts";
 import {GarbageCalendar} from "./components/GarbageCalendar.tsx";
+// import tailwindcss from "@tailwindcss/vite";
 
 function App() {
     const parameters = new URLSearchParams(document.location.search);
@@ -50,7 +51,7 @@ function App() {
                     }
                 </main>
 
-                <footer className="text-center text-sm mt-32 pb-8 animate-fade-in-up
+                <footer className="text-center text-sm mt-32 pb-8 
                 print:absolute print:-bottom-0 print:left-0 print:w-full print:text-left print:text-xs print:m-0 print:p-0">
                     Gemaakt door <a href="https://lionsdensoftware.nl">Lions Den Software</a> | <a
                     href="https://danielhaitink.nl" target="_blank" rel="noreferrer">Daniël Haitink</a>

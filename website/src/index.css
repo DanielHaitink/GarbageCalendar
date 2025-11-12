@@ -114,33 +114,12 @@
         @apply w-auto;
     }
 
-    @media print {
-        print-color-adjust: exact;
+    a:hover {
+        @apply underline;
+    }
 
-        /*header {*/
-        /*    display: none;*/
-        /*}*/
-
-        /*.App {*/
-        /*    background: #FFFFFF !important;*/
-        /*    background-repeat: no-repeat;*/
-        /*    background-position: center;*/
-        /*    background-size: cover;*/
-        /*    !*background-image: none;*!*/
-        /*    color: #000000*/
-        /*}*/
-
-        /*.calendar-container {*/
-        /*    @apply w-full;*/
-        /*    @apply h-full;*/
-        /*    @apply bg-white;*/
-        /*    @apply rounded-none;*/
-        /*    @apply shadow-none;*/
-        /*}*/
-
-        /*footer {*/
-        /*    !*display: none;*!*/
-        /*}*/
+    a:focus, a:active {
+        @apply text-gray-600;
     }
 }
 
