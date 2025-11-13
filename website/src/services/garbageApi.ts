@@ -1,5 +1,6 @@
 import {type Address, type GarbageData, type GarbagePickup, type GarbageType, GarbageTypes} from "../types.ts";
 import {cache} from "./garbageCache.ts";
+import {env} from "../utils/env.ts";
 
 export interface RawGarbageData {
     address: RawGarbageAddress;
@@ -33,9 +34,8 @@ export interface RawGarbagePickup {
 }
 
 class GarbageApiService {
-    static BASE_URL = "https://grapi.hait.ink/api/proxy"; //env.isDevelopment ? "http://localhost:3000/api/proxy" :
+    static BASE_URL = env.isDevelopment ? "http://localhost:3000/api/proxy" : "https://grapi.hait.ink/api/proxy";
 
-    static DEV = import.meta.env.DEV;
     /**
      * Get the cached garbage data or null if not available.
      * @param address {Address} The address.

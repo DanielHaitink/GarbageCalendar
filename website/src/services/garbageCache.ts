@@ -24,15 +24,16 @@ class GarbageCache {
      * @param address {Address} An address.
      */
     addRecentSearch(address: Address) {
-        while (this.recentSearches.length > GarbageCache.RECENT_SEARCH_MAX)
-            this.recentSearches.pop();
-
         let index = -1;
         if (index = this.recentSearches.findIndex(recentSearch => recentSearch.postcode === address.postcode
             && recentSearch.number === address.number && recentSearch.suffix === address.suffix), index >= 0)
             this.recentSearches.splice(index, 1);
 
         this.recentSearches.unshift(address);
+
+        while (this.recentSearches.length > GarbageCache.RECENT_SEARCH_MAX)
+            this.recentSearches.pop();
+
         localStorage.setItem(GarbageCache.RECENT_SEARCHES_KEY, JSON.stringify(this.recentSearches));
     }
 
