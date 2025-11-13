@@ -125,11 +125,11 @@ class Server {
 
     start() {
         if (this.https) {
-            this.https.listen(this.port, () => {
+            this.https.listen(this.port, "0.0.0.0", () => {
                 console.log(`Server WITH SSL started on port ${this.port}`);
             });
         } else {
-            this.app.listen(this.port, () => {
+            this.app.listen(this.port, "0.0.0.0", () => {
                 console.log(`Server started on port ${this.port}`);
             });
         }
