@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    expose:
+      - 3000:3000
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+     test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:3000/health || exit 1"]
+     interval: 180s
+     timeout: 10s
+     retries: 3
+     start_period: 40s
