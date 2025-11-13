@@ -125,8 +125,8 @@ class GarbageApiService {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
+                    'Accept': 'application/json'},
+                signal: AbortSignal.timeout(5000)
             });
 
             console.log(response);

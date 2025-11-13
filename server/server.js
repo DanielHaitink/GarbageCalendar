@@ -90,6 +90,7 @@ class Server {
             {
                 origin: (origin, callback) => {
                     const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ["*"];
+                    origin = origin?.trim().replace(/^https?:\/\//, '');
 
                     if ((!origin && process.env.NODE_ENV !== 'production') ||
                         allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
