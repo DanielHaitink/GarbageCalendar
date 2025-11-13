@@ -7,6 +7,8 @@ WORKDIR /
 # Copy package.json and package-lock.json first (for caching)
 COPY package*.json ./
 
+RUN export NODE_ENV=production
+
 # Install dependencies
 RUN npm install --only=production
 

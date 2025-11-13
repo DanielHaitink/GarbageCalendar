@@ -44,11 +44,9 @@ class Server {
     https = null;
     proxy = handler;
     limiter = rateLimit({
-        windowMs: 5 * 60 * 1000,
-        limit: 20,
-        standardHeaders: true,
-        legacyHeaders: false,
+        windowMs: 5 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false,
     });
+    logfile = process.env.LOGFILE || './access.log';
 
     constructor(port = Server.DEFAULT_PORT, sslCertificate = null) {
         if (!sslCertificate)
@@ -63,22 +61,70 @@ class Server {
         this.#setup();
     }
 
+    #logRequest(req, res, next) {
+        const timestamp = new Date().toISOString();
+        const ip = req.ip || req.connection.remoteAddress;
+        const userAgent = req.get('User-Agent') || 'Unknown';
+        const referer = req.get('Referer') || 'None';
+        const origin = req.get('Origin') || 'None';
+
+        console.log(`[${timestamp}] ${req.method} ${req.url} - IP: ${ip} - Origin: ${origin} - Referer: ${referer} - UA: ${userAgent}`);
+
+        fs.appendFile(
+            this.logfile,
+            `${timestamp} | ${req.method} | ${req.url} | ${ip} | ${origin} | ${referer} | ${userAgent}\n`).catch(console.error);
+
+        next();
+    }
+
     #setup() {
         if (this.sslCertificate) {
             this.https = https.createServer({
-                key: this.sslCertificate.key,
-                cert: this.sslCertificate.cert
+                key: this.sslCertificate.key, cert: this.sslCertificate.cert
             }, this.app);
         }
 
-        this.app.use(cors());
+        // this.app.set('trust proxy', true);
+        this.app.use(this.#logRequest.bind(this));
+        this.app.use(cors(
+            {
+                origin: (origin, callback) => {
+                    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [];
+
+                    // Allow requests with no origin (mobile apps, curl, etc.) in development
+                    if (!origin && process.env.NODE_ENV !== 'production') {
+                        return callback(null, true);
+                    }
+
+                    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+                        callback(null, true);
+                    } else {
+                        console.log(`❌ Blocked request from unauthorized origin: ${origin}`);
+                        callback(new Error('Not allowed by CORS'));
+                    }
+                },
+                credentials: true,
+                methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+                allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+            }
+        ));
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended: true}));
         this.app.use(this.limiter);
 
+        this.app.get('/health', (req, res) => {
+            res.json({status: 'ok', timestamp: new Date().toISOString()});
+        });
+
         this.app.get('/api/proxy', (req, res) => {
             this.proxy(req, res);
         });
+
+        this.app.use((req, res) => {
+            console.log(`❌ 404 - ${req.method} ${req.originalUrl} from ${req.ip}`);
+            res.status(404).json({error: 'Endpoint not found'});
+        });
+
     }
 
     start() {
@@ -94,5 +140,5 @@ class Server {
     }
 }
 
-const server = new Server(process.env.PORT || 3000); //await SslCertificate.load("./test.key", "./test.crt"
+const server = new Server(process.env.PORT || 3000);
 server.start();
