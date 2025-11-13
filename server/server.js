@@ -84,19 +84,15 @@ class Server {
             }, this.app);
         }
 
-        // this.app.set('trust proxy', true);
+        this.app.set('trust proxy', true);
         this.app.use(this.#logRequest.bind(this));
         this.app.use(cors(
             {
                 origin: (origin, callback) => {
-                    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [];
+                    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ["*"];
 
-                    // Allow requests with no origin (mobile apps, curl, etc.) in development
-                    if (!origin && process.env.NODE_ENV !== 'production') {
-                        return callback(null, true);
-                    }
-
-                    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+                    if ((!origin && process.env.NODE_ENV !== 'production') ||
+                        allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
                         callback(null, true);
                     } else {
                         console.log(`❌ Blocked request from unauthorized origin: ${origin}`);
