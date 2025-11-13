@@ -84,7 +84,7 @@ class Server {
             }, this.app);
         }
 
-        this.app.set('trust proxy', true);
+        this.app.set('trust proxy', process.env.TRUST_PROXY || true);
         this.app.use(this.#logRequest.bind(this));
         this.app.use(cors(
             {
@@ -100,8 +100,8 @@ class Server {
                     }
                 },
                 credentials: true,
-                methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-                allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+                methods: ['GET','OPTIONS'],
+                allowedHeaders: ['Content-Type', 'X-Requested-With']
             }
         ));
         this.app.use(express.json());

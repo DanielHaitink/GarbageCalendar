@@ -34,7 +34,7 @@ export interface RawGarbagePickup {
 }
 
 class GarbageApiService {
-    static BASE_URL = env.isDevelopment ? "http://localhost:3000/api/proxy" : "https://garbage.lionsdensoftware.nl";
+    static BASE_URL = "https://grapi.hait.ink/api/proxy"; //env.isDevelopment ? "http://localhost:3000/api/proxy" :
 
     static DEV = import.meta.env.DEV;
     /**
