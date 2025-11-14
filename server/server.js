@@ -63,16 +63,16 @@ class Server {
 
     #logRequest(req, res, next) {
         const timestamp = new Date().toISOString();
-        const ip = req.ip || req.connection.remoteAddress;
+        // const ip = req.ip || req.connection.remoteAddress;
         const userAgent = req.get('User-Agent') || 'Unknown';
         const referer = req.get('Referer') || 'None';
         const origin = req.get('Origin') || 'None';
 
-        console.log(`[${timestamp}] ${req.method} ${req.url} - IP: ${ip} - Origin: ${origin} - Referer: ${referer} - UA: ${userAgent}`);
+        console.log(`[${timestamp}] ${req.method} ${req.url} - Origin: ${origin} - Referer: ${referer} - UA: ${userAgent}`);
 
         fs.appendFile(
             this.logfile,
-            `${timestamp} | ${req.method} | ${req.url} | ${ip} | ${origin} | ${referer} | ${userAgent}\n`).catch(console.error);
+            `${timestamp} | ${req.method} | ${req.url} | ${origin} | ${referer} | ${userAgent}\n`).catch(console.error);
 
         next();
     }

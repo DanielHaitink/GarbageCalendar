@@ -76,7 +76,7 @@ function App() {
                     Gemaakt door <a href="https://lionsdensoftware.nl">Lions Den Software</a> | <a
                     href="https://danielhaitink.nl" target="_blank" rel="noreferrer">Daniël Haitink</a>
                     <br/>
-                    <a href="https://github.com/danielhaitink/garbage-calendar" target="_blank" rel="noreferrer"
+                    <a href="https://github.com/DanielHaitink/GarbageCalendar" target="_blank" rel="noreferrer"
                        className={"print:hidden"}>Bekijk
                         de code op Github</a>
                 </footer>
