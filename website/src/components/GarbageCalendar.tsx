@@ -36,7 +36,8 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
             className="calendar-container flex flex-col max-w-4xl mx-auto bg-white
                 print:w-full print:h-full">
 
-            <button onClick={print} className={"fixed right-50 bottom-10 w-16 h-16 bg-groningen rounded-4xl drop-shadow-xl shadow-md z-50 hover:bg-red-500 print:hidden"}>
+            <button onClick={print} className={"fixed right-50 bottom-10 w-16 h-16 bg-groningen rounded-4xl " +
+                "drop-shadow-xl shadow-md z-50 hover:bg-red-500 print:hidden max-md:right-5 max-md:bottom-5 max-md:w-12 max-md:h-12"}>
                 <FontAwesomeIcon icon={faPrint} color={"#f1f1f1"}></FontAwesomeIcon>
             </button>
 
@@ -57,7 +58,7 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
                         <GarbageUpcoming data={data}/>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 print:grid-cols-3 print:gap-2">
+                    <div className="grid grid-cols-2 gap-4 print:grid-cols-3 print:gap-2 max-sm:grid-cols-1 ">
                         {
                             months.map((month, index) => (
                                 <div key={index} className={"calendar-month break-inside-avoid"}>

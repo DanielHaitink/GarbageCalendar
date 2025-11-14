@@ -67,8 +67,8 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
      * @param number {string} The number
      */
     const validateNumber = (number: string): string | undefined => {
-        if (number.length > 4)
-            return "Huisnummer mag maximaal 4 cijfers bevatten";
+        if (number.length > 8)
+            return "Huisnummer mag maximaal 8 cijfers bevatten";
         if (number.length > 0 && !/^\d+$/.test(number.trim()))
             return "Huisnummer mag alleen cijfers bevatten";
 
@@ -80,10 +80,10 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
      * @param suffix {string} The suffix
      */
     const validateSuffix = (suffix: string): string | undefined => {
-        if (suffix?.length > 2)
-            return "Toevoeging mag maximaal 2 karakters bevatten";
-        if (suffix?.length > 0 && !/^[A-z]$/.test(suffix.trim()))
-            return "Toevoeging mag alleen letters bevatten";
+        if (suffix?.length > 10)
+            return "Toevoeging mag maximaal 10 karakters bevatten";
+        if (suffix?.length > 0 && !/^[A-z\d]+$/.test(suffix.trim()))
+            return "Toevoeging mag alleen letters en cijfers bevatten";
 
         return undefined;
     }
@@ -187,7 +187,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
 
     return (
         <form
-            className="bg-white p-8 rounded-xl shadow-lg mb-8 w-md mx-auto print:hidden"
+            className="bg-white p-8 rounded-xl shadow-lg mb-8 w-md max-w-screen mx-auto print:hidden"
             onSubmit={handleSubmit}
         >
             <RecentSearches recentSearches={cache.getRecentSearches()} onClick={fillAndSearch}></RecentSearches>
@@ -254,7 +254,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
 
                    }`}
                     required
-                    maxLength={4}
+                    maxLength={8}
                 />
                 {formState.errors.number && (
                     <p className="text-red-500 text-xs italic mt-2">
@@ -284,7 +284,7 @@ export const AddressForm : React.FC<AddressFormProps> = ({ onSubmit, onSuccess, 
                              }
 
                    }`}
-                    maxLength={2}
+                    maxLength={10}
                 />
                 {formState.errors.suffix && (
                     <p className="text-red-500 text-xs italic mt-2">
