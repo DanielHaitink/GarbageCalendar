@@ -33,8 +33,9 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
 
     return (
         <div
-            className="calendar-container flex flex-col max-w-4xl mx-auto  rounded-xl bg-white shadow-lg p-8 dropshadow-2xl
-                print:w-full print:h-full print:rounded-none print:shadow-none print:p-0">
+            className="calendar-container flex flex-col max-w-4xl mx-auto bg-white
+                print:w-full print:h-full">
+
             <button onClick={print} className={"fixed right-50 bottom-10 w-16 h-16 bg-groningen rounded-4xl drop-shadow-xl shadow-md z-50 hover:bg-red-500 print:hidden"}>
                 <FontAwesomeIcon icon={faPrint} color={"#f1f1f1"}></FontAwesomeIcon>
             </button>
