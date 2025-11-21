@@ -24,7 +24,7 @@ const getDaysUntilName = (date: Date) => {
         case 0: return "Vandaag";
         case 1: return "Morgen";
         case 2: return "Overmorgen";
-        default: return `In ${daysUntil} dagen`;
+        default: return `Over ${daysUntil} dagen`;
     }
 }
 
