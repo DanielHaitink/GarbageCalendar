@@ -14,7 +14,7 @@ class Pair {
 }
 
 export class GarbageCache {
-    static DEFAULT_VALIDITY = 1000 * 60 * 60 * 24 * 7; // One week
+    static DEFAULT_VALIDITY = 1000 * 60 * 60 * 24 * 1; // One day
 
     cache = {};
     #validity = GarbageCache.DEFAULT_VALIDITY;

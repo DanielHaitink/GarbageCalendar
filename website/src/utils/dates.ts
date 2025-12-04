@@ -40,6 +40,10 @@ export const getDaysUntil = (date: Date) => {
     return Math.floor((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 }
 
+export const getYears = (pickups: GarbagePickup[]) => {
+    return pickups.map(pickup => pickup.date.getFullYear()).filter((year, index, array) => array.indexOf(year) === index);
+}
+
 export const sortPickups = (pickups: GarbagePickup[]) => {
     return pickups.sort((a, b) => a.date.getTime() - b.date.getTime());
 }

@@ -6,8 +6,6 @@ import {GarbageCalendar} from "./components/GarbageCalendar.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
-// import tailwindcss from "@tailwindcss/vite";
-
 function App() {
     const parameters = new URLSearchParams(document.location.search);
     const [currentAddress, setCurrentAddress] = useState<Address | undefined>(
@@ -49,7 +47,7 @@ function App() {
                         Groningen</h1>
                 </header>
 
-                <main className="flex-grow animate-fade-in-up">
+                <main className="flex-grow animate-fade-in-up ">
                     {!garbageData && < AddressForm
                         onSubmit={handleAddressSubmit}
                         onSuccess={handleGarbageDataSuccess}

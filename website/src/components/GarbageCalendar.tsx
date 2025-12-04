@@ -1,6 +1,6 @@
 import * as React from "react";
 import type {GarbageData, GarbagePickup} from "../types.ts";
-import {getDayText, getMonthText, monthlyPickups} from "../utils/dates.ts";
+import {getDayText, getMonthText, getYears, monthlyPickups} from "../utils/dates.ts";
 import {GarbageIcon, GarbageTypeLabel} from "../utils/garbage.tsx";
 import {GarbageUpcoming} from "./GarbageUpcoming.tsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -11,7 +11,13 @@ interface GarbageCalendarProps {
 }
 
 export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
-    const months = monthlyPickups(data.pickups);
+    const years = getYears(data.pickups);
+    const yearData = [];
+
+    for (const year of years) {
+        yearData.push(monthlyPickups(data.pickups.filter((pickup) => pickup.date.getFullYear() === year)));
+    }
+    // const months = monthlyPickups(data.pickups);
 
     const uniquePickup: { [key: string]: string } = {};
 
@@ -49,16 +55,22 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
                 <p className="text-gray-500 italic text-center">Geen inlever informatie gevonden voor dit adres</p>
             ) : (
 
-                <div>
+                <div className={"calendar"}>
 
-                    <div className={"calendar-upcoming mb-16 print:hidden"}>
+                    <div className={"calendar-upcoming mb-8 print:hidden"}>
                         <h2 className={"bg-groningen text-white text-xl font-bold capitalize p-2 mb-2"}>
                             Komende week
                         </h2>
                         <GarbageUpcoming data={data}/>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 print:grid-cols-3 print:gap-2 max-sm:grid-cols-1 ">
+                    {yearData.map((months, index) => (
+                        <div key={years[index]} className={"calendar-year-container [&:not(:first-child)]:mb-8 print:mb-4"}>
+                            {(years.length > 1) ? (
+                                <div key={index} className={"calendar-year text-groningen text-xl font-bold mb-2 print:mb-2"}>{years[index]}</div>
+                                ) : null}
+
+                            <div className="grid grid-cols-2 gap-4 print:grid-cols-3 print:gap-2 max-sm:grid-cols-1 ">
                         {
                             months.map((month, index) => (
                                 <div key={index} className={"calendar-month break-inside-avoid"}>
@@ -77,6 +89,8 @@ export const GarbageCalendar: React.FC<GarbageCalendarProps> = ({data}) => {
                             ))
                         }
                     </div>
+                        </div>
+                    ))}
 
                     <div className={"calendar-placement mt-16 print:mt-4 break-inside-avoid"}>
                         <h2 className={"text-xl font-bold mb-4 print:text-lg print:font-bold print:mb-2"}>

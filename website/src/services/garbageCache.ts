@@ -10,7 +10,7 @@ export const getCacheKey = (address: Address) => {
 
 class GarbageCache {
     static RECENT_SEARCHES_KEY = "recentSearches";
-    static CACHE_VALIDITY = 1000 * 60 * 60 * 24 * 90;
+    static CACHE_VALIDITY = 1;
     static RECENT_SEARCH_MAX = 3;
 
     recentSearches: Address[] = [];
@@ -53,8 +53,13 @@ class GarbageCache {
         localStorage.setItem(getCacheKey(address), JSON.stringify(data));
     }
 
+    /**
+     * Check if the date of the cache is still valid.
+     * @param date {Date} A date object
+     * @private
+     */
     private isCacheValid(date: Date) {
-        return date.getTime() - new Date().getTime() < GarbageCache.CACHE_VALIDITY;
+        return Date.now() - date.getTime() < GarbageCache.CACHE_VALIDITY;
     }
 
     /**

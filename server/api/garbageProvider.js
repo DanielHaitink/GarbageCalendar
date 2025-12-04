@@ -14,7 +14,7 @@ export class GarbageProvider {
     providerUrl = null;
     authToken = null;
     authValidUntil = null;
-    IDCache = new GarbageCache(1000 * 60 * 60 * 24 * 31);
+    IDCache = new GarbageCache();
     cache = new GarbageCache();
 
     /**
@@ -138,8 +138,9 @@ export class GarbageProvider {
      */
     async getWasteData(addressId) {
         try {
-            if (this.cache.has(addressId))
-                return this.cache.get(addressId);
+            const cached = this.cache.get(addressId);
+            if (cached)
+                return cached;
 
             if (!await this.#authenticate())
                 throw new Error('Failed to authenticate');

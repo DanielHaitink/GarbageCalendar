@@ -1,7 +1,6 @@
 import {GarbageProvider} from "./garbageProvider.js";
 
 const garbageProvider = new GarbageProvider(GarbageProvider.PROVIDER_GRONINGEN);
-// const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
 /**
  * Get the address information from the request.
@@ -87,7 +86,7 @@ export default async function handler(req, res) {
 
         const data = await garbageProvider.getWasteData(address.addressId);
 
-        return sendResponse(res, {address: address, pickups: data, lastUpdated: new Date().toISOString()});
+        return sendResponse(res, {address: address, pickups: data, lastUpdated: new Date().toUTCString()});
     } catch (e) {
         console.error(e);
         return sendError(res, 500, e.message || "Er is iets misgegaan");
